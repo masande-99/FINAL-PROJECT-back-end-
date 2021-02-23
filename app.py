@@ -1,13 +1,15 @@
 import sqlite3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,jsonify
 
 
 def init_sqlite_db():
     conn = sqlite3.connect('products.db')
     print("Opened database successfully")
 
-    conn.execute('CREATE TABLE items (product_name TEXT, brand_name TEXT, available_sizes TEXT, product_id TEXT, product_image TEXT)')
-    print("Table created successfully")
+    conn.execute('CREATE TABLE IF NOT EXISTS items (product_name TEXT, brand_name TEXT, available_sizes TEXT, product_id TEXT, product_image TEXT)')
+    print("Table(items) created successfully")
+    conn.execute('CREATE TABLE IF NOT EXISTS users(fullname TEXT, username TEXT, password TEXT, usernameId TEXT)')
+    print("Table(users) created successfully")
     conn.close()
 
     init_sqlite_db()
@@ -43,7 +45,7 @@ def add_new_item():
 
         finally:
             con.close()
-            return render_template('items.html', msg=msg)
+            return jsonify('items.html', msg=msg)
 
 
 @app.route('/show-items/', methods=["GET"])
