@@ -16,7 +16,7 @@ def init_sqlite_db():
 app = Flask(__name__)
 
 
-#@app.route('/')
+@app.route('/')
 @app.route('/enter-new-item/')
 def enter_new_item():
     return render_template('product.html')
