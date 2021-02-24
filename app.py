@@ -5,7 +5,6 @@ from flask_cors import CORS
 
 def init_sqlite_db():
     conn = sqlite3.connect('products.db')
-    conn.cursor()
     print("Opened database successfully")
 
     conn.execute('CREATE TABLE IF NOT EXISTS items (product_name TEXT, brand_name TEXT, available_sizes TEXT, product_id TEXT, product_image TEXT)')
@@ -19,11 +18,6 @@ def init_sqlite_db():
 
 app = Flask(__name__)
 CORS(app)
-
-def dict_factory(cursor, row):
-    d={}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] =row[idx]
 
 
 @app.route('/')
@@ -69,7 +63,7 @@ def show_records():
         print("There was an error fetching results from the database.")
     finally:
         con.close()
-        return jsonify(records=records)
+        return render_template('main.html', records=records)
 
 
 
