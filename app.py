@@ -1,5 +1,5 @@
 import sqlite3
-from flask import Flask, render_template, request,jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 
 
@@ -9,11 +9,11 @@ def init_sqlite_db():
 
     conn.execute('CREATE TABLE IF NOT EXISTS items (product_name TEXT, brand_name TEXT, available_sizes TEXT, product_id TEXT, product_image TEXT)')
     print("Table(items) created successfully")
-    conn.execute('CREATE TABLE IF NOT EXISTS users(fullname TEXT, username TEXT, password TEXT, usernameId TEXT)')
+    conn.execute('CREATE TABLE IF NOT EXISTS users(fullname TEXT, email TEXT, username TEXT, password TEXT, address TEXT )')
     print("Table(users) created successfully")
     conn.close()
 
-    init_sqlite_db()
+init_sqlite_db()
 
 
 app = Flask(__name__)
@@ -28,6 +28,7 @@ def enter_new_item():
 
 @app.route('/add-new-item/', methods=['POST'])
 def add_new_item():
+    msg = None
     if request.method == "POST":
         try:
             p_name = request.form['name']
@@ -47,7 +48,7 @@ def add_new_item():
 
         finally:
             con.close()
-            return render_template('items.html', msg=msg)
+            return jsonify(msg)
 
 
 @app.route('/show-items/', methods=["GET"])
@@ -63,7 +64,44 @@ def show_records():
         print("There was an error fetching results from the database.")
     finally:
         con.close()
-        return render_template('main.html', records=records)
+        return jsonify(records)
 
 
+@app.route('/add-new-user/', methods=['POST'])
+def add_new_user():
+    msg = None
+    if request.method == "POST":
+        try:
+            p_name = request.form['name']
+            email = request.form['email']
+            username = request.form['username']
+            address = request.form['address']
+            password = request.form['password']
 
+            with sqlite3.connect('products.db') as con:
+                cur = con.cursor()
+                cur.execute("INSERT INTO users (fullname, email, username, password , address) VALUES (?,?, ?, ?, ?)", (p_name, email, username, address,password))
+                con.commit()
+                msg = "Item added successfully."
+        except Exception as e:
+            con.rollback()
+            msg = "Error occurred in insert operation: " + str(e)
+
+        finally:
+            con.close()
+            return jsonify(msg)
+
+@app.route('/show-users/', methods=["GET"])
+def show_users():
+    records = []
+    try:
+        with sqlite3.connect('products.db') as con:
+            cur = con.cursor()
+            cur.execute("SELECT * FROM users")
+            records = cur.fetchall()
+    except Exception as e:
+        con.rollback()
+        print("There was an error fetching results from the database.")
+    finally:
+        con.close()
+        return jsonify(records)
