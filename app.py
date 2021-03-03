@@ -2,6 +2,8 @@ import sqlite3
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 
+global records
+records = []
 
 def init_sqlite_db():
     conn = sqlite3.connect('products.db')
@@ -58,7 +60,6 @@ def add_new_item():
 
 @app.route('/show-items/', methods=["GET"])
 def show_records():
-    records = []
     try:
         with sqlite3.connect('products.db') as con:
             con.row_factory = dict_factory
@@ -99,7 +100,7 @@ def add_new_user():
 
 @app.route('/show-users/', methods=["GET"])
 def show_users():
-    records = []
+
     try:
         with sqlite3.connect('products.db') as con:
             con.row_factory = dict_factory
@@ -114,8 +115,10 @@ def show_users():
         return jsonify(records)
 
 
-@app.route('/login/', methods=["GET"])
-def login(massage=None):
+
+@app.route('/login/', methods=["POST"])
+def login():
+    massage= "You were successfully logged in"
     try:
         p_name = request.form['name']
         email = request.form['email']
@@ -123,19 +126,12 @@ def login(massage=None):
         address = request.form['address']
         password = request.form['password']
 
-        with sqlite3.connect('products.db') as con:
-            con.row_factory =dict_factory
-            cur = con.cursor()
-            cur.execute("SELECT ('email', 'username', 'password') FROM users WHERE email LIKE 'email', WHERE username LIKE 'username%';WHERE password LIKE 'password'")
+        for x in records:
+            return jsonify(massage)
     except Exception as e:
-        con.rollback()
         print("There was an error fetching data from table" + str(e))
     finally:
-        con.close()
         return jsonify(msg=massage)
-
-
-
 
 
 if __name__=='__main__':
