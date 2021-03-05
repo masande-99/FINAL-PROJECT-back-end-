@@ -9,7 +9,7 @@ def init_sqlite_db():
     print("Opened database successfully")
 
     conn.execute(
-        'CREATE TABLE IF NOT EXISTS items (product_name TEXT, brand_name TEXT, available_sizes TEXT, product_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, product_image TEXT)')
+        'CREATE TABLE IF NOT EXISTS items (product_name TEXT, brand_name TEXT, available_sizes TEXT, price TEXT,images TEXT, product_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, product_image TEXT)')
     print("Table(items) created successfully")
     conn.execute(
         'CREATE TABLE IF NOT EXISTS users(fullname TEXT, email TEXT, username TEXT, password TEXT, address TEXT )')
@@ -185,6 +185,51 @@ def send_email(p_name,email,username,comment):
                f'comment :{comment}'
     mail.send(msg)
     return "Sent"
+
+
+@app.route('/products/')
+def insert_products():
+    try:
+        with sqlite3.connect('products.db') as con:
+            cur = con.cursor()
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('sneaker', 'Brand :Nike', 'size :6-8\n','Available:  R800', 'https://i.postimg.cc/qMTZDBQn/no3.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'brand :Converse', 'size :6-8\n','Available:  R1200', 'https://i.postimg.cc/WprH7qmT/no4.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand :Nike', 'size :6-8\n', 'Available:  R600', 'https://i.postimg.cc/V6HmBrXj/istockphot.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'Brand :jordan', 'Size :7-9\n', 'Available: R2200', 'https://i.postimg.cc/g2wRv8RK/jordan-shoes-1777572-340.png')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'Brand : Nike', 'size :6-8\n','Available:  R1700', 'https://i.postimg.cc/Fztn4h4M/no6.png')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Air max', 'Brand : Nike', 'size : 7-9\n','Available:  R1185', 'https://i.postimg.cc/4x42Z8Dx/no1.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand', 'size :7-9\n','Available:  R900', 'https://i.postimg.cc/HLwgKvXs/white.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand : Adidas', 'size :7-9\n','Available:  R2175', 'https://i.postimg.cc/ZqS840BF/adidass.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('full boot', 'Brand : Timberland', 'size :7-9\n','Available:  R3120', 'https://i.postimg.cc/K8FSTrC6/no11.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('sneaker', 'Brand : Reebock', 'size : 7-9\n','Available:  R1280', 'https://i.postimg.cc/MHh3zq8k/reebok-2061623-340.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand : Prada', 'size : 7-9\n','Available:  R1840', 'https://i.postimg.cc/1tMcWPz0/black-1868865-340.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand : Adidas', 'size :7-9\n','Available:  R2180', 'https://i.postimg.cc/W39gGn9X/adidas-2554690-340.png')")
+            con.commit()
+            msg= 'Record successfully added.'
+    except Exception as e:
+        con.rollback()
+        msg = 'Error occurred in insert operation'+str(e)
+    finally:
+        con.close()
+    return jsonify(msg)
+
+@app.route('/show-products/', methods= ['GET'])
+def show_products():
+    data = []
+    try:
+        with sqlite3.connect('products.db') as con:
+            con.row_factory = dict_factory
+            cur = con.cursor()
+            cur.execute('SELECT * FROM items')
+            data = cur.fetchall()
+    except Exception as e:
+        con.rollback()
+        print("There was an error fetching products from the database")
+    finally:
+        con.close()
+        return jsonify(data)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
