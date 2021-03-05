@@ -97,9 +97,8 @@ def add_new_user():
             p_name = request.form['name']
             email = request.form['email']
             username = request.form['username']
-            address = request.form['address']
             password = request.form['password']
-
+            address = request.form['address']
             with sqlite3.connect('products.db') as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO users (fullname, email, username, password , address) VALUES (?,?, ?, ?, ?)",
@@ -131,23 +130,6 @@ def show_users():
         con.close()
         return jsonify(records)
 
-@app.route('/show-users/', methods=["GET"])
-def pull_users():
-    global recs
-    recs = []
-    try:
-        with sqlite3.connect('products.db') as con:
-            con.row_factory = dict_factory
-            cur = con.cursor()
-            cur.execute("SELECT * FROM users")
-            recs = cur.fetchall()
-    except Exception as e:
-        con.rollback()
-        print("There was an error fetching results from the database."+ str(e))
-    finally:
-        con.close()
-        return jsonify(recs)
-
 
 @app.route('/contact-us/',methods=['GET','POST'])
 def contact_us():
@@ -164,19 +146,39 @@ def contact_us():
                 cur.execute("INSERT INTO logins (fullname, email, username, comments) VALUES (?,?, ?, ?)",
                             (p_name, email, username, comment))
                 con.commit()
-                send_email(p_name,email,username,comment)
+                # send_email(p_name,email,username,comment)
+                test_sending_mail()
                 msg = "Item added successfully."
+
         except Exception as e:
             con.rollback()
-            msg = "Error occurred in insert operation: " + str(e)
+            msg = "Error occurred in insert operation or while sending the email: " + str(e)
 
         finally:
             con.close()
             return jsonify(msg)
 
 
+def test_sending_mail():
+    from smtplib import SMTP
+    server = SMTP('smtp.gmail.com', 587)
+    try:
+        sender_email = 'gontyelenimasande@gmail.com'
+        receiver_email = 'gontyelenimasande@gmail.com'
+        password = 'Sandei99#'
+
+        server.starttls()
+        server.login(send_email, password)
+        server.sendmail(send_email, receiver_email, 'This is a test.')
+        print('Message sent succesfully')
+    except Exception as e:
+        print("Something wrong happened: " + str(e))
+    finally:
+        server.close()
+
+
 def send_email(p_name,email,username,comment):
-    msg = Message('Hello', sender = 'gontyelenimasande@gmail.com', recipients='{email}')
+    msg = Message('Hello', sender = 'gontyelenimasande@gmail.com', recipients=['gontyelenimasande@gmail.com'])
     msg.body = f'fullname :{p_name} ' \
                f'email :{email} ' \
                f'username :{username}' \
