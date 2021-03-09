@@ -94,11 +94,12 @@ def add_new_user():
     msg = None
     if request.method == "POST":
         try:
-            p_name = request.form['name']
-            email = request.form['email']
-            username = request.form['username']
-            password = request.form['password']
-            address = request.form['address']
+            post_data = request.get_json()
+            p_name = post_data['name']
+            email = post_data['email']
+            username = post_data['username']
+            password = post_data['password']
+            address = post_data['address']
             with sqlite3.connect('products.db') as con:
                 cur = con.cursor()
                 cur.execute("INSERT INTO users (fullname, email, username, password , address) VALUES (?,?, ?, ?, ?)",
@@ -193,10 +194,10 @@ def insert_products():
         with sqlite3.connect('products.db') as con:
             cur = con.cursor()
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('sneaker', 'Brand :Nike', 'size :6-8\n','Available:  R800', 'https://i.postimg.cc/qMTZDBQn/no3.jpg')")
-            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'brand :Converse', 'size :6-8\n','Available:  R1200', 'https://i.postimg.cc/WprH7qmT/no4.jpg')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'brand :Converse', 'size :6-8\n','Available:  R1200', 'https://i.postimg.cc/Fztn4h4M/no6.png')")
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand :Nike', 'size :6-8\n', 'Available:  R600', 'https://i.postimg.cc/V6HmBrXj/istockphot.jpg')")
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'Brand :jordan', 'Size :7-9\n', 'Available: R2200', 'https://i.postimg.cc/g2wRv8RK/jordan-shoes-1777572-340.png')")
-            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'Brand : Nike', 'size :6-8\n','Available:  R1700', 'https://i.postimg.cc/Fztn4h4M/no6.png')")
+            cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Half boot sneaker', 'Brand : Nike', 'size :6-8\n','Available:  R1700', 'https://i.postimg.cc/WprH7qmT/no4.jpg')")
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Air max', 'Brand : Nike', 'size : 7-9\n','Available:  R1185', 'https://i.postimg.cc/4x42Z8Dx/no1.jpg')")
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand', 'size :7-9\n','Available:  R900', 'https://i.postimg.cc/HLwgKvXs/white.jpg')")
             cur.execute("INSERT INTO items(product_name, brand_name, available_sizes, price, images) VALUES('Sneaker', 'Brand : Adidas', 'size :7-9\n','Available:  R2175', 'https://i.postimg.cc/ZqS840BF/adidass.jpg')")
