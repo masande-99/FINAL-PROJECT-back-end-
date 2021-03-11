@@ -34,6 +34,7 @@ CORS(app)
 
 # A route to add a new item to the database from the front-end
 @app.route('/')
+
 @app.route('/add-new-item/', methods=['POST'])
 def add_new_item():
     msg = None
@@ -63,20 +64,7 @@ def add_new_item():
 
 
 # A route to fetch items/products from the data base
-@app.route('/show-items/', methods=["GET"])
-def show_records():
-    try:
-        with sqlite3.connect('products.db') as con:
-            con.row_factory = dict_factory
-            cur = con.cursor()
-            cur.execute("SELECT * FROM items")
-            records = cur.fetchall()
-    except Exception as e:
-        con.rollback()
-        print("There was an error fetching results from the database." + str(e))
-    finally:
-        con.close()
-        return jsonify(records)
+
 
 
 # A route to register a new user to the database
