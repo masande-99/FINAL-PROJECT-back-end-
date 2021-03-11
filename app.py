@@ -33,13 +33,13 @@ app = Flask(__name__)
 mail= Mail(app)
 CORS(app)
 
-
+# A template to use for the database
 @app.route('/')
 @app.route('/enter-new-item/')
 def enter_new_item():
     return render_template('product.html')
 
-
+# A route to add new items to the database
 @app.route('/add-new-item/', methods=['POST'])
 def add_new_item():
     msg = None
@@ -66,7 +66,7 @@ def add_new_item():
             con.close()
             return jsonify(msg)
 
-
+# A route to fetch all the products in the database
 @app.route('/show-items/', methods=["GET"])
 def show_records():
     try:
@@ -82,7 +82,7 @@ def show_records():
         con.close()
         return jsonify(records)
 
-
+# Adding  anew user to the database
 @app.route('/add-new-user/', methods=['POST'])
 def add_new_user():
     msg = None
@@ -107,7 +107,7 @@ def add_new_user():
         finally:
             con.close()
             return jsonify(msg)
-
+# A route to fetch new users
 @app.route('/show-users/', methods=["GET"])
 def show_users():
     global records
@@ -125,63 +125,7 @@ def show_users():
         con.close()
         return jsonify(records)
 
-
-@app.route('/contact-us/',methods=['GET','POST'])
-def contact_us():
-    if request.method == "POST":
-        try:
-            p_name = request.form['name']
-            email = request.form['email']
-            username = request.form['username']
-            comment = request.form['comments']
-
-
-            with sqlite3.connect('products.db') as con:
-                cur = con.cursor()
-                cur.execute("INSERT INTO logins (fullname, email, username, comments) VALUES (?,?, ?, ?)",
-                            (p_name, email, username, comment))
-                con.commit()
-                # send_email(p_name,email,username,comment)
-                test_sending_mail()
-                msg = "Item added successfully."
-
-        except Exception as e:
-            con.rollback()
-            msg = "Error occurred in insert operation or while sending the email: " + str(e)
-
-        finally:
-            con.close()
-            return jsonify(msg)
-
-
-def test_sending_mail():
-    from smtplib import SMTP
-    server = SMTP('smtp.gmail.com', 587)
-    try:
-        sender_email = 'gontyelenimasande@gmail.com'
-        receiver_email = 'gontyelenimasande@gmail.com'
-        password = 'Sandei99#'
-
-        server.starttls()
-        server.login(send_email, password)
-        server.sendmail(send_email, receiver_email, 'This is a test.')
-        print('Message sent succesfully')
-    except Exception as e:
-        print("Something wrong happened: " + str(e))
-    finally:
-        server.close()
-
-
-def send_email(p_name,email,username,comment):
-    msg = Message('Hello', sender = 'gontyelenimasande@gmail.com', recipients=['gontyelenimasande@gmail.com'])
-    msg.body = f'fullname :{p_name} ' \
-               f'email :{email} ' \
-               f'username :{username}' \
-               f'comment :{comment}'
-    mail.send(msg)
-    return "Sent"
-
-
+#A route to add new product automatically
 @app.route('/products/')
 def insert_products():
     try:
@@ -207,7 +151,7 @@ def insert_products():
     finally:
         con.close()
     return jsonify(msg)
-
+# A route to fetch all the products from the database
 @app.route('/show-products/', methods= ['GET'])
 def show_products():
     data = []
